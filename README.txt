@@ -1,4 +1,4 @@
-This directory includes my contributions to the BreazeHome4.0 Project.
+This repository includes my contributions to the BreazeHome4.0 Project.
 
 BreazeHome4.0 is a real estate website found at: 
 https://breazehome.com/

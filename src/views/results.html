@@ -1,0 +1,520 @@
+<breaze-header></breaze-header>
+<div class="results">
+	<div main-Color class="results-search-wrapper">
+		<form class="results-search-form" role="search">
+			<div class="results-icon">
+				<div class="results-icon-block" ng-class="{'results-icon-block-selected': settings.listView === 'card'}" ng-click="settings.listView = 'card'">
+					<i class="glyphicon glyphicon-th"></i>
+				</div>
+				<div class="results-icon-block" ng-class="{'results-icon-block-selected': settings.listView === 'list'}" ng-click="settings.listView = 'list'">
+					<i class="glyphicon glyphicon-align-justify"></i>
+				</div>
+			</div>
+			<div class="results-input-wrapper">
+
+                <!-- START refinement search:acris005@fiu.edu -->
+                <!-- starting point of results page search box -->
+                <input type="text" class="results-input" ng-model="searchInput" placeholder="Enter address, city, or zipcode" ng-keydown="$event.keyCode === 13 && addressSearch()" autofocus/>
+                <!-- END refinement search -->
+
+        <!--
+				<i class="results-input-icon glyphicon glyphicon-search"></i>
+        -->
+			</div>
+            <!-- START of Lester's filters - #783 - lhern207@fiu.edu -->
+       		<button class="results-filter-button" ng-click="expandFilter()"><i class="glyphicon glyphicon-menu-down"></i> {{priceSet ? currentPriceMin + 'k -' + currentPriceMax + 'k' : 'Any Price'}} / {{bedroomsSet ? currentMinBedrooms + '-' + currentMaxBedrooms : 'Any '}} Bedrooms / {{bathroomsSet ? currentMinBathrooms + '-' + currentMaxBathrooms : 'Any '}} Bathrooms <span ng-if="isOpen">/ Openhouse</span> </button>
+			<a class="results-submit btn" ng-click="saveCurrentSearch()">
+				<span class="glyphicon glyphicon-floppy-disk"></span>
+				{{storage.language.content.resultsPage.saveSearch}}
+			</a>
+			<div class="results-filter-dropdown" ng-class="{'animated fadeInDown':!filterHide, ' animated fadeOutUp':filterHide}" ng-hide="filterHide">
+        <div additional-Color accent-Color-Text class="results-filter-content">
+
+          <div class="results-filter-header row">
+            <!-- <div class="results-filter-header-buttons col-md-12"> -->
+            <button accent-Color id="apply" class="results-filter-header-button col-md-3" ng-disabled="applyButtonDisabled" ng-click="applyFilter()">{{applyButtonText}}</button>
+            <button accent-Color id="reset" class="results-filter-header-button col-md-3" ng-disabled="applyButtonDisabled" ng-click="resetFilter()">{{storage.language.content.filterPage.resetFilter}}</button>
+            <!-- </div> -->
+          </div>
+          <div class="row">
+            <div class="results-filter-pane col-md-3">
+              <div main-Color class="results-filter-pane-bg">
+                <div class="results-filter-pane-title">Price range
+                  <span class="results-filter-pane-tags-count">/ {{priceCount}}</span>
+                </div>
+                <canvas id="pricebar" class="results-filter-chart chart-bar"
+                        chart-data="priceChartData"
+                        chart-labels="priceChartLabels"
+                        chart-series="priceChartSeries"
+                        chart-options="priceChartOptions"
+                        chart-colors="priceChartColors"
+                        width=100 height=8>
+                </canvas>
+                <rzslider id="priceslider" class="results-filter-slider"
+                          rz-slider-model="options.totalPrice.min"
+                          rz-slider-high="options.totalPrice.max"
+                          rz-slider-options="options.totalPrice.options">
+                </rzslider>
+                <div id="pricebuttons" class="results-filter-buttons row">
+                  <button class="results-filter-header-button cold-md-4">{{options.totalPrice.min}} k</button>
+                  <button class="results-filter-header-button cold-md-4">{{options.totalPrice.max}} k</button>
+                </div>
+              </div>
+            </div>
+            <div class="results-filter-pane col-md-3">
+              <div main-Color class="results-filter-pane-bg">
+                <div class="results-filter-pane-title">Property Type
+                  <span class="results-filter-pane-tags-all" ng-click="propertyTypeSelectAllAction()">{{propertyTypeSelectAllText}}</span>
+                </div>
+                <div>
+                  <button class="results-filter-checkbox" ng-class="{'results-filter-checkbox-checked':type.checked}" ng-repeat="type in filterTypes" ng-disabled="isDisabled(type)" title={{showDisabledMessage(type)}} ng-click="type.checked = type.checked?false:true; propertyTypeSelectOne()">
+                    <i class="fa fa-check" ng-show="type.checked"></i> {{type.name}}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="results-filter-pane col-md-3">
+              <div main-Color class="results-filter-pane-bg">
+                <div class="results-filter-pane-title">Bedrooms
+                  <span class="results-filter-pane-tags-count">/ {{bedsCount}}</span>
+                </div>
+                <canvas id="bedsbar" class="results-filter-chart chart-bar"
+                        chart-data="bedsChartData"
+                        chart-labels="bedsChartLabels"
+                        chart-series="bedsChartSeries"
+                        chart-options="bedsChartOptions"
+                        chart-colors="bedsChartColors"
+                        width=100 height=8>
+                </canvas>
+                <rzslider id="bedsslider" class="results-filter-slider"
+                          rz-slider-model="options.bedrooms.min"
+                          rz-slider-high="options.bedrooms.max"
+                          rz-slider-options="options.bedrooms.options">
+                </rzslider>
+                <div style="text-align: center;">
+                    <div class="results-filter-dropdown-filter row">
+                        <select ng-model="selectedMinBedrooms" ng-options="x for x in number_beds_options"></select>
+                        <select ng-model="selectedMaxBedrooms" ng-options="x for x in number_beds_options"></select>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="results-filter-pane col-md-3">
+              <div main-Color class="results-filter-pane-bg">
+                <div class="results-filter-pane-title">Bathrooms
+                    <span class="results-filter-pane-tags-count">/ {{bathsCount}}</span>
+                </div>
+                <canvas id="bathsbar" class="results-filter-chart chart-bar"
+                        chart-data="bathsChartData"
+                        chart-labels="bathsChartLabels"
+                        chart-series="bathsChartSeries"
+                        chart-options="bathsChartOptions"
+                        chart-colors="bathsChartColors"
+                        width=100 height=8>
+                </canvas>
+                <rzslider id="bathsslider" class="results-filter-slider"
+                          rz-slider-model="options.bathrooms.min"
+                          rz-slider-high="options.bathrooms.max"
+                          rz-slider-options="options.bathrooms.options">
+                </rzslider>
+		        <div style="text-align: center;">
+                  <div class="results-filter-dropdown-filter row">
+                      <select ng-model="selectedMinBathrooms" ng-options="x for x in number_baths_options"></select>
+                      <select ng-model="selectedMaxBathrooms" ng-options="x for x in number_baths_options"></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="results-filter-pane col-md-4">
+              <div main-Color class="results-filter-pane-tags-bg">
+                  <div class="results-filter-pane-title">Listing Type
+                    <span class="results-filter-pane-tags-all" ng-click="listingTypeSelectAllAction()">{{listingTypeSelectAllText}}</span>
+                  </div>
+                  <div>
+                    <button class="results-filter-checkbox" ng-class="{'results-filter-checkbox-checked':type.checked}" ng-repeat="type in filterTransType" ng-disabled="isDisabled(type)" title={{showDisabledMessage(type)}} ng-click="type.checked = type.checked?false:true; listingTypeSelectOne()">
+                      <i class="fa fa-check" ng-show="type.checked"></i> {{type.name}}
+                    </button>
+                  </div>
+              </div>
+            </div>
+            <div class="results-filter-pane col-md-5">
+                  <div main-Color class="results-filter-pane-tags-bg">
+                    <div class="results-filter-pane-title">
+                      Tagged by me
+                      <span class="results-filter-pane-tags-all" ng-click="tagsSelectAllAction()">{{tagsSelectAllText}}</span>
+                    </div>
+                    <div>
+                      <button class="results-filter-checkbox" ng-class="{'results-filter-checkbox-checked':tag.checked}" ng-repeat="tag in sampleTags" ng-disabled="isDisabled(tag)" title={{showDisabledMessage(tag)}} ng-click="tag.checked = tag.checked?false:true; tagsSelectOne()">
+                        <i class="fa fa-check" ng-show="tag.checked"></i> {{tag.name}}
+                      </button>
+                    </div>
+                  </div>
+            </div>
+            <div class="results-filter-pane col-md-3">
+                  <div main-Color class="results-filter-pane-hidePropertiesPane">
+                      <div class="results-filter-pane-title">
+                        <input type="radio" name="Properties" ng-change="showAll(false)" ng-model="showProperties" ng-value=false> Hide Hidden Properties<br>
+                        <input type="radio" name="Properties" ng-change="showAll(true)" ng-model="showProperties" ng-value=true> Unhide Hidden Properties
+                      </div>
+                  </div>
+            </div>
+            </div>
+            </div>
+            <div id="more" class="results-filter-content-more" ng-class="{'animated slideInDown':!hideMore, ' animated slideOutUp':hideMore}" ng-hide="hideMore">
+              <div class="row">
+                <div class="results-filter-pane col-md-3" title="Option Disabled">
+                  <div main-Color class="results-filter-pane-bg">
+                    <div class="results-filter-pane-title">Price / square feet
+                      <span class="results-filter-pane-tags-count">/ {{priceSqftCount}}</span>
+                    </div>
+                    <canvas id="pricesqftbar" class="results-filter-chart chart-bar"
+                        chart-data="priceSqftChartData"
+                        chart-labels="priceSqftChartLabels"
+                        chart-series="priceSqftChartSeries"
+                        chart-options="priceSqftChartOptions"
+                        chart-colors="priceSqftChartColors"
+                        width=100 height=8>
+                    </canvas>
+                    <rzslider id="pricepersqftslider" class="results-filter-slider"
+                              rz-slider-model="options.pricePerArea.min"
+                              rz-slider-high="options.pricePerArea.max"
+                              rz-slider-options="options.pricePerArea.options">
+                    </rzslider>
+                    <div class="results-filter-buttons row">
+                      <button class="results-filter-header-button cold-md-4">{{options.pricePerArea.min}} k</button>
+                      <button class="results-filter-header-button cold-md-4">{{options.pricePerArea.max}} k</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="results-filter-pane col-md-3">
+                  <div main-Color class="results-filter-pane-bg">
+                    <div class="results-filter-pane-title">Year built
+                      <span class="results-filter-pane-tags-count">/ {{yearBuiltCount}}</span>
+                    </div>
+                    <canvas id="yearbuiltbar" class="results-filter-chart chart-bar"
+                        chart-data="yearBuiltChartData"
+                        chart-labels="yearBuiltChartLabels"
+                        chart-series="yearBuiltChartSeries"
+                        chart-options="yearBuiltChartOptions"
+                        chart-colors="yearBuiltChartColors"
+                        width=100 height=8>
+                    </canvas>
+                    <rzslider id="yearbuiltslider" class="results-filter-slider"
+                              rz-slider-model="options.buildingAge.min"
+                              rz-slider-high="options.buildingAge.max"
+                              rz-slider-options="options.buildingAge.options">
+                    </rzslider>
+                    <div class="results-filter-buttons row">
+                      <button class="results-filter-header-button cold-md-4">{{options.buildingAge.min}} years</button>
+                      <button class="results-filter-header-button cold-md-4">{{options.buildingAge.max}} years</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="results-filter-pane col-md-3">
+                  <div main-Color class="results-filter-pane-bg">
+                    <div class="results-filter-pane-title">Size (Living area)
+                      <span class="results-filter-pane-tags-count">/ {{livingAreaCount}}</span>
+                    </div>
+                    <canvas id="livingareabar" class="results-filter-chart chart-bar"
+                        chart-data="livingAreaChartData"
+                        chart-labels="livingAreaChartLabels"
+                        chart-series="livingAreaChartSeries"
+                        chart-options="livingAreaChartOptions"
+                        chart-colors="livingAreaChartColors"
+                        width=100 height=8>
+                    </canvas>
+                    <rzslider id="livingareaslider" class="results-filter-slider"
+                              rz-slider-model="options.livingArea.min"
+                              rz-slider-high="options.livingArea.max"
+                              rz-slider-options="options.livingArea.options">
+                    </rzslider>
+                    <div class="results-filter-buttons row">
+                      <button class="results-filter-header-button cold-md-4">{{options.livingArea.min}} sqft</button>
+                      <button class="results-filter-header-button cold-md-4">{{options.livingArea.max}} sqft</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="results-filter-pane col-md-3">
+                  <div main-Color class="results-filter-pane-bg">
+                    <div class="results-filter-pane-title">Size (Lot)
+                      <span class="results-filter-pane-tags-count">/ {{lotSizeCount}}</span>
+                    </div>
+                    <canvas id="lotsizebar" class="results-filter-chart chart-bar"
+                        chart-data="lotSizeChartData"
+                        chart-labels="lotSizeChartLabels"
+                        chart-series="lotSizeChartSeries"
+                        chart-options="lotSizeChartOptions"
+                        chart-colors="lotSizeChartColors"
+                        width=100 height=8>
+                    </canvas>
+                    <rzslider id="lotareaslider" class="results-filter-slider"
+                              rz-slider-model="options.squareMeters.min"
+                              rz-slider-high="options.squareMeters.max"
+                              rz-slider-options="options.squareMeters.options">
+                    </rzslider>
+                    <div class="results-filter-buttons row">
+                      <button class="results-filter-header-button cold-md-4">{{options.squareMeters.min}} sqft</button>
+                      <button class="results-filter-header-button cold-md-4">{{options.squareMeters.max}} sqft</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+				<div class="results-filter-pane col-md-4">
+                  <div main-Color class="results-filter-pane-bg">
+                    <div class="results-filter-pane-title">Features & Amenities
+                      <span class="results-filter-pane-tags-all" ng-click="featuresSelectAllAction()">{{featuresSelectAllText}}</span>
+                    </div>
+                    <div>
+                      <button class="results-filter-checkbox" ng-class="{'results-filter-checkbox-checked':feature.checked}" ng-repeat="feature in filterFeatures" ng-disabled="isDisabled(feature)" title={{showDisabledMessage(feature)}} ng-click="feature.checked = feature.checked?false:true; featuresSelectOne()">
+                        <i class="fa fa-check" ng-show="feature.checked"></i> {{feature.name}}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+       		<div class="results-filter-pane col-md-2">
+                  <div main-Color class="results-filter-pane-bg">
+                    <div class="results-filter-pane-title">Time on breaze</div>
+		              <div style="text-align: center;">
+                        <span class="results-filter-pane-title">Less than</span>
+                        <span class="results-filter-dropdown-filtertwo">
+                          <select ng-disabled=true title="Option Disabled" ng-model="selectedUpdateTime" ng-options="x for x in time_options"></select>
+                        </span>
+                      </div>
+                  </div>
+                </div>
+                        <!-- BEGIN PoLR UI Changes -->
+                        <div class="results-filter-pane col-md-6">
+                            <div main-Color class="results-filter-pane-bg">
+                                <div class="results-filter-pane-title">Commute</div>
+                                <div>
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tr>
+                                            <td width="14%"><input class="results-filter-checkbox-checked" type="radio" ng-model="commute.day" value="0"></td>
+                                            <td width="14%"><input class="results-filter-checkbox-checked" type="radio" ng-model="commute.day" value="1"></td>
+                                            <td width="14%"><input class="results-filter-checkbox-checked" type="radio" ng-model="commute.day" value="2"></td>
+                                            <td width="14%"><input class="results-filter-checkbox-checked" type="radio" ng-model="commute.day" value="3"></td>
+                                            <td width="14%"><input class="results-filter-checkbox-checked" type="radio" ng-model="commute.day" value="4"></td>
+                                            <td width="14%"><input class="results-filter-checkbox-checked" type="radio" ng-model="commute.day" value="5"></td>
+                                            <td width="14%"><input class="results-filter-checkbox-checked" type="radio" ng-model="commute.day" value="6"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sun</td>
+                                            <td>Mon</td>
+                                            <td>Tue</td>
+                                            <td>Wed</td>
+                                            <td>Thu</td>
+                                            <td>Fri</td>
+                                            <td>Sat</td>
+                                        </tr>
+                                        <tr><td colspan="7" width="100%">&nbsp;</td></tr>
+                                        <tr>
+                                            <td colspan="7" width="100%">
+                                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                    <tr>
+                                                        <td width="10%">Arrival Time:</td>
+                                                        <td width="10%"><input type="time" class="results-filter-header-button cold-md-1" ng-model="commute.time" placeholder="HH:mm:ss" min="00:00:00" max="23:59:59" /></td>
+                                                        <td width="5%"> </td>
+                                                        <td width="13%"> Max Time (Mins):</td>
+                                                        <td width="15%"><input type="number" class="results-filter-header-button cold-md-1" ng-model="commute.minutes" min="0" max="180"></td>
+                                                        <td width="14%"><input style = "visibility:hidden" type="radio" ng-model="commute.type" value="driving" id="a1" />
+
+                                                        <label for="a1" class="radiostyle"><i class="fa fa-automobile fa-2x" ></i></label> </td>
+
+                                                        <td width="14%"><input style = "visibility:hidden" type="radio" ng-model="commute.type" value="bicycling" id="a2" />
+                                                        <label for="a2" class="radiostyle"><i class="fa fa-bicycle fa-2x"></i></label> </td>
+
+                                                        <td width="14%"><input style = "visibility:hidden" type="radio" ng-model="commute.type" value="walking" id="a3" />
+
+                                                        <label for="a3" class="radiostyle"><i class="fa fa-blind fa-2x"></i></label> </td>
+						                            </tr>
+                                                </table>
+                                            </td>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End PoLR UI Changes -->
+              </div>
+            </div>
+            <!-- END of Lester's filters - #783 - lhern207@fiu.edu -->
+            <div class="results-filter-bottom">
+              <span class="results-filter-bottom-slope results-filter-bottom-slope-left"></span>
+              <div class="results-filter-bottom-buttons col-md-3">
+                <button ng-click="expandMore()" class="results-filter-bottom-button col-md-3">{{moreFilterText}}</button>
+                <span>|</span>
+                <button id="close-filter" class="results-filter-bottom-button col-md-3" ng-click="closeFilter()">
+                  Close filter
+                </button>
+              </div>
+              <span class="results-filter-bottom-slope results-filter-bottom-slope-right"></span>
+            </div>
+          </div>
+</form>
+  </div>
+  <div main-Color class="detail-divider-dash"></div>
+  <div class="container-fluid results-wrapper" >
+    <!-- Results List -->
+    <div class="col-sm-6 results-list-wrapper">
+      <div class="results-list">
+
+        <div class="row">
+           <!-- START sortPropertiesbyAttributes:lcaba026@fiu.edu -->
+          <div class="col-xs-6">
+            <h4 class="results-list-length"><strong>{{propertyCounter()}}</strong> {{storage.language.content.resultsPage.resultNumber}}</h4>
+          </div>
+
+          <div class="col-xs-offset-2 icons-rigth">
+
+
+            <span class="result-list-openModal" type="button" ng-click="showSortPropertiesModal()">
+              <i type="button" ng-hide="isArrEmpty()"  class="glyphicon glyphicon-sort"></i>
+              <!--<div ng-bind="arrayToString(sortRule)"> </div>-->
+              <span id="result-list-openModal-iconList" ng-repeat="item in sortItems | filter:sortNameFilter">
+                  <i class="showIcon" ng-class="icon_list[item.name]" ng-hide="showIconWhenSorted()"></i>
+                  <i class="showArrow" ng-class="item.asc?'glyphicon glyphicon-arrow-up':'glyphicon glyphicon-arrow-down'" ng-hide="showIconWhenSorted()"></i>
+                  <!--<i ng-class="item.asc?'glyphicon glyphicon-arrow-up':'glyphicon glyphicon-arrow-down'"  ng-hide="!item.selected"></i>-->
+              </span>
+            </span>
+
+
+             <!--<pre ng-show="customResult">{{customResult}}</pre>  -->
+          </div>
+        </div>
+
+				<!-- Card viewca -->
+				<div class="row" ng-class="{'hide': settings.listView === 'list'}">
+					<div>
+						<!-- Property Card -->
+
+						<div ng-repeat="property in properties | orderBy:orderByAttributes() | filter:hideFilter"  ng-init= "openUpcoming = property.openHouseUpcoming" class="col-sm-6 col-md-4 animated fadeInUp" ng-hide="property.toggle" ng-mouseover="onCardsHover(property, $event)" ng-mouseleave="onCardsHoverOut($event)">
+
+<!-- END sortPropertiesbyAttributes -->
+              <!-- 	{{property.brokerRemarks}}-->
+              <div class="thumbnail card-wrapper">
+                <a ng-click="clickCard(property)" class="card-link"></a>
+                <!-- START #2357 and #2487 Andreina Rojas aroja108@fiu.edu -->
+                  <!-- Save property -->
+                   <i class="card-save glyphicon" ng-init="isSaved(property,property.id)" ng-class="{'card-save-saved glyphicon-star': property.saved, 'glyphicon-star-empty': !property.saved}" ng-click="addPropertyToList($event, property, property.id)"></i>
+                  <!-- END #2357 and #2487 Andreina Rojas aroja108@fiu.edu -->
+
+                <!-- Tag property -->
+                <span class="card-tag-add" ng-click="openTagModal($event)">#</span>
+                <!-- Hide Property -Eithel-->
+                <div ng-if="user">
+                  <i class="card-toggler glyphicon" class="results-submit btn">
+                    <span ng-click="toggleProperty($event, property)">
+                      <i id="eithel3" ng-click="hideHiddenProperty()" ng-hide="!property.visible" class="icon-eye"></i>
+                      <i id="eithel4" ng-click="unhideHiddenProperty()" ng-hide="property.visible" class="icon-eye-none"></i>
+                    </span>
+                  </i>
+                </div>
+
+                <div ng-if="!user">
+                  <i class="card-toggler glyphicon">
+                    <span ng-click="userNotLogin()">
+                      <i id="eithel33" ng-hide="!property.visible" class="icon-eye"></i>
+                    </span>
+                  </i>
+                </div>
+                
+                <!-- Add Tag Input -->
+                <form class="card-tag-input-wrapper animated" ng-submit="addNewTag($event, property)">
+                  <input type="text" placeholder="enter a tag" class="card-tag-input" ng-model="settings.tag.newTag" />
+                  <i class="glyphicon glyphicon-remove" ng-click="closeTagModal($event)"></i>
+                  <i class="glyphicon glyphicon-ok" ng-click="addNewTag(property)"></i>
+                </form>
+                <!-- Image -->
+                <div class="card-image" style="background-image: url(../images/placeholder.jpg)">
+                  <div class="card-filter"></div>
+                  <!-- <img ng-src="https://dev.breazehome.com{{property.thumbnailPath}}" class="animated fadeInUp" ng-style="{'animation-delay': {{0.07*($index+2)}}+'s'}" alt="..."> -->
+                  <!-- <img src="../images/placeholder.jpg" class="animated fadeInUp" ng-style="{'animation-delay': {{0.07*($index+2)}}+'s'}" alt="..."> -->
+                  <!-- Ashif,Openhouse -->
+                  {{openUpcoming=property.openHouseUpcoming;""}}
+                  <div main-Color-Text accent-Color ng-if="openUpcoming&&openUpcoming.startsWith('Public')" class="card-openhouse col-md-11">
+                    <span> {{property.openHouseUpcoming.split(": ")[1].replace("PM-","-")}}</span>
+                  </div>
+                  <!-- End of Ashif,Openhouse-->
+
+                  <!-- Tags -->
+                  <div class="card-tag-wrapper">
+                    <span ng-repeat="tag in tags track by $index" class="card-tag">#{{tag}}</span>
+                  </div>
+                </div>
+
+                <!-- Caption -->
+                <div class="caption">
+                  <div class="card-top">
+                    <span class="card-price">${{formatPrice(property.currentPrice)|| '-'}}</span>
+                    <span class="card-bedrooms">{{property.bedsTotal || '-' }} {{storage.language.content.resultsPage.cardBeds}}</span>
+                    <span class="card-bathrooms">{{property.bathsFull || '-' }} {{storage.language.content.resultsPage.cardBath}} </span>
+                  </div>
+                  <div class="card-bottom">
+                    <div class="card-address">{{property.addressInternetDisplay}} {{formatCity(property.city)}}, FL</div>
+                    <div class="card-details">
+                      <span>Condo </span> &middot;
+                      <span>{{property.sqFtTotal || '-'}} {{storage.language.content.resultsPage.sqFt}}</span> &middot;
+                      <span>{{property.yearBuilt || '-'}} {{storage.language.content.resultsPage.year}}</span>
+                      <!-- END sortPropertiesbyAttributes -->
+                    </div>
+										<!-- START View Competition for Properties : adubu002@fiu.edu -->
+										<div class="card-details">
+												<span>Total Views: {{property.count}}</span>
+										</div>
+										<!-- END View Competition for Properties -->
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+        <!-- Table view -->
+        <div ng-class="{'hide': settings.listView === 'card'}" class="animated fadeInUp property-table-wrapper table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th main-Color><i class="glyphicon glyphicon-picture"></i></th>
+                <th main-Color><i class="glyphicon glyphicon-map-marker"></i></th>
+                <th main-Color><i class="glyphicon glyphicon-usd"></i></th>
+                <th main-Color>{{storage.language.content.resultsPage.sqFt}}</th>
+                <th main-Color>{{storage.language.content.resultsPage.beds}}</th>
+                <th main-Color>{{storage.language.content.resultsPage.baths}}</th>
+                <th main-Color>{{storage.language.content.resultsPage.type}}</th>
+                <th main-Color>{{storage.language.content.resultsPage.gym}}</th>
+                <th main-Color>{{storage.language.content.resultsPage.pool}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="property in properties">
+                <td class="property-table-thumb"><img ng-src="https://dev.breazehome.com{{property.thumbnailPath}}" class="animated fadeInUp" ng-style="{'animation-delay': {{0.07*($index+2)}}+'s'}" alt="..."></td>
+                <td class="property-table-address">{{property.addressInternetDisplay || 'Undisclosed Address'}}, {{property.city}}</td>
+                <td>{{property.currentPrice | currency:""}}</td>
+                <td>{{property.sqFtTotal || '-'}}</td>
+                <td><strong>{{property.bedsTotal || '-'}}</strong></td>
+                <td><strong>{{property.bathsFull || '-'}}</strong></td>
+                <td>{{property.propertyType || '-'}}</td>
+                <td><i class="glyphicon glyphicon-ok text-success"></i></td>
+                <td><i class="glyphicon glyphicon-remove text-danger"></i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map View -->
+    <div class="col-sm-6 results-map-wrapper">
+      <div id="map1" class="results-map">
+        <span class="results-map-content"></span>
+      </div>
+    </div>
+  </div>
+  <chatbox
+    ng-if="lobbyChannel"
+    user="user"
+    channel="lobbyChannel"
+    messages="lobbyMessages">
+  </chatbox>
+</div>

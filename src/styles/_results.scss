@@ -1,0 +1,424 @@
+$brand-main: #006990;
+$brand-secondary: #d6db0f;
+
+.results{
+	// position: fixed;
+	&-wrapper{
+		padding: 0;
+	}
+	&-icon{
+		float: left;
+		margin: 0 15px;
+		vertical-align: middle;
+		font-size: 16px;
+		height: 34px;
+		line-height: 1.428571429;
+		&-block {
+			color: white;
+			padding: 5px;
+		    display: inline-block;
+		    transition: all 0.2s ease-out;
+		    text-align: center;
+			vertical-align: middle;
+		    margin-left: -5px;
+		    font-size: 18px;
+			&:hover, &-selected{
+				background-color: $brand-main;
+				color: $brand-secondary;
+			}
+		}
+	}
+	&-search{
+		&-wrapper{
+			display: block;
+		    width: 100%;
+		    background: $brand-main;
+		    padding: 20px 25px 20px 10px;
+	    }
+	    &-form{
+    		float: none !important;
+    		float: left;
+    		height: 35px;
+    		line-height: 1.428571429;
+    		vertical-align: middle;
+    		// width: 100%;
+    		// > * {
+    		// 	display: inline-block;
+    		// 	margin-right: 5px;
+    		// }
+   //  		a {
+   //  			margin-right: 10px;
+			// 	color: white;
+			// }
+		}
+	}
+	// &-dropdown{
+	// 	width: 100px;
+	// }
+	&-input{
+		color: white;
+		width: 33% !important;
+		background-color: #71b8d2;
+		font-size: 14px;
+		height: 34px;
+		line-height: 1.428571429;
+		padding: 5px 12px;
+		border: 0px;
+		&::placeholder {
+			color: #006990;
+		}
+		&-wrapper{
+			position: relative;
+			display: inline;
+		}
+		&-icon{
+			position: absolute;
+			right: 14px;
+			z-index: 999;
+			top: 3px;
+			color: white;
+		}
+	}
+	&-filter {
+        //START of Lester's sliders and charts
+        &-slider {
+            position: absolute;
+            left: 0px;
+            bottom: 40px;
+        }
+        &-chart {
+            position: absolute;
+            left: 10px;
+            bottom: 60px;
+        }
+        //END of Lester's sliders and charts
+		&-button {
+			height: 34px;
+			line-height: 1.428571429;
+			padding: 5px 39px;
+			background: none;
+			border: 0px;
+			color: white;
+		    transition: all 0.2s ease-out;
+			&:hover, &:active {
+				background-color: #135271;
+			}
+		}
+		&-dropdown{
+			position: absolute;
+			margin-top: 15px;
+			margin-left: -10px;
+			color: #f0ea00;
+			// background: none;
+			border: 0px;
+			width: 100%;
+			// min-height: 100px;
+			z-index: 9999;
+			&-filter {
+				position: absolute;
+				bottom: 20px;
+				left: 200px;
+				text-align: center;
+				color: #135271;
+				border: 0;
+				min-width: 50px;
+				display:inline-block;
+			    float:none;
+			    /* inline-block space fix */
+			    margin-right:-3px;
+			    padding: 3px;
+				&:hover {
+					background-color: #f0ea00;
+				}
+            }
+            &-filtertwo {
+                text-align: center;
+                color: #135271;
+                border: 0;
+                min-width: 50px;
+                display:inline-block;
+                float:none;
+             /* inline-block space fix */
+                margin-right:-3px;
+                padding: 3px;
+                &:hover {
+                    background-color: #f0ea00;
+                }
+			 }
+		}
+		&-content {
+			padding: 15px 25px 5px;
+			background-color: #135271;
+			position: relative;
+			z-index: 900;
+			&-more {
+				padding: 0 25px 5px;
+				background-color: #135271;
+				position: relative;
+				z-index: 500;
+			}
+		}
+		&-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 150px;
+			min-width: 100px;
+			text-align: center;
+			//margin-top: 10px;
+		}
+		&-header {
+			margin: 15px;
+			text-align: center;
+			&-button {
+                //position: absolute;
+                //bottom: 20px;
+				color: #135271;
+				border: 0;
+				min-width: 100px;
+				display:inline-block;
+			    float:none;
+			    /* inline-block space fix */
+			    margin-right:-3px;
+			    padding: 3px;
+				&:hover {
+					background-color: #f0ea00;
+				}
+			}
+		}
+		&-bottom {
+			// margin: 15px;
+			text-align: center;
+			vertical-align: top;
+			height: 32px;
+			&-slope {
+				display: inline-block;
+				width: 18px;
+				height: 32px;
+				margin: 0 -4px;
+				&-left {
+					background: linear-gradient(60deg, transparent 50%, #135271 50%);
+				}
+				&-right {
+					background: linear-gradient(-60deg, transparent 50%, #135271 50%);
+				}
+			}
+			&-buttons {
+				background-color: #135271;
+				display:inline-block;
+				float:none;
+			    /* inline-block space fix */
+			    // margin-right:-3px;
+
+			    height: 32px;
+			    vertical-align: top;
+			}
+			&-button {
+				color: #f0ea00;
+				border: 0;
+				min-width: 100px;
+				display:inline-block;
+				background-color: #135271;
+			    float:none;
+			    /* inline-block space fix */
+			    margin-right:-3px;
+			    padding: 3px;
+			    height: 32px;
+				// &:hover {
+				// 	background-color: #f0ea00;
+				// 	color: #135271;
+				// }
+			}
+		}
+		&-pane {
+			padding: 5px 5px 0 ;
+			margin: 5px 0;
+            //START of Eithel's hide property pane.
+            &-hidePropertiesPane {
+                height: 74px;
+                padding: 10px;
+                background-color: #006990;
+            }
+            //END of Eithel's hide property pane.
+			&-bg {
+                position: relative;				
+				padding: 10px;
+				background-color: #006990;
+				height: 140px;
+			}
+			&-tags {
+				&-bg {
+					padding: 10px;
+					background-color: #006990;
+				}
+				&-all {
+					color: white;
+					font-size: 8pt;
+				}
+                &-count{
+                    color: white;
+					font-size: 9pt;
+                }
+			}
+			&-title {
+				font-size: 12pt;
+			}
+		}
+		&-checkbox {
+			margin: 5px 10px;
+			background: none;
+			border: 0;
+			color: rgba(255,255,255,0.4);
+			&-checked {
+				color: #f0ea00;
+			}
+		}
+		&-more {
+			color: white;
+			margin-right: 15px;
+			&-test {
+				height: 45px;
+				width: 100%;
+				margin: 5px;
+			}
+		}
+
+
+
+	}
+	&-submit{
+		float: right;
+		border: 1px solid;
+		padding: 10px 13px;
+		color: $brand-secondary;
+		transition: all 0.2s ease-out;
+		&:hover {
+			color: $brand-main;
+			background: $brand-secondary;
+			border: 1px solid $brand-main;
+		}
+	}
+	&-list{
+	    height: 100vh;
+	    padding: 20px;
+	    overflow: scroll;
+	    h4{
+	    	margin-bottom: 20px;
+	    }
+	    &-wrapper{
+	    	padding: 0;
+	    	background: #f2f2f2;
+	    }
+	    &-card{
+	    	transition: all 0.3s ease-out;
+	    	cursor: pointer;
+	    	&:hover{
+	    		transform: translateY(-10px);
+	    		box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.5);
+	    	}
+	    }
+	}
+	&-map{
+		background: #efefef;
+		display: table;
+	    height: calc(100vh - 180px);
+	    text-align: center;
+	    width: 100%;
+	    background: #798E98;
+		background-blend-mode: color;
+		border-left: 2px solid #00698F;
+		box-shadow: inset 0 0 6px 0 #145271;
+        cursor: url('../images/map/map_pen_cursor.png') -50 35, pointer;
+
+	    &-wrapper{
+	    	padding: 0;
+	    }
+	    &-content{
+	    	display: table-cell;
+	    	vertical-align: middle;
+	    	font-size: 2em;
+	    }
+	}
+}
+
+/*Overriding css for classes from www/lib/angularjs-slider/dist/rzslider.css*/
+.rzslider .rz-bar {
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 1px;                  /*Changes height of bar*/
+  background: #4d96b0;          /*Changes color of unselected bar*/
+  -webkit-border-radius: 2px;
+     -moz-border-radius: 2px;
+          border-radius: 2px;
+}
+
+.rzslider .rz-bar.rz-selection {
+  z-index: 2;
+  background: #f0ea00;          /*Color of selected bar*/
+  -webkit-border-radius: 2px;
+     -moz-border-radius: 2px;
+          border-radius: 2px;
+}
+
+.rzslider .rz-pointer {
+    top: -7px;
+    z-index: 3;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    background-color: #f0ea00;   /*Changes outer circle color*/
+    -webkit-border-radius: 16px;
+       -moz-border-radius: 16px;
+            border-radius: 16px;
+}
+
+.rzslider .rz-pointer:after {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;                  /*Changes size of inner circle, requires positioning changes, and changes to border-radius below*/
+    height: 12px;
+    background: #135271;          /*Changes inner circle color, set to background color*/
+    -webkit-border-radius: 16px;
+         -moz-border-radius: 16px;
+             border-radius: 16px;
+    content: '';
+}
+
+.rzslider .rz-pointer.rz-active:after {
+    background-color: #135271;  /*Changes color of inner circle while active*/
+}
+
+//START sortPropertiesbyAttributes:lcaba026@fiu.edu
+.result-list-openModal{
+   margin-bottom: 20px;
+  -webkit-margin-before: 1.33em;
+  -webkit-margin-after: 1.33em;
+}
+
+
+//START sortPropertiesbyAttributes:lcaba026@fiu.edu
+i.glyphicon-sort{
+  //margin-right: 11px;
+  padding: 8px;
+  font-size: 15px;
+}
+.icons-rigth{
+ position: absolute;
+ right: 0;
+ padding-left:  15px;
+ padding-right: 15px;
+ margin-right:  20px;
+ margin-top:  11px;
+}
+
+span#result-list-openModal-iconList{
+  padding-left: 7px;
+}
+
+span#result-list-openModal-iconList .showIcon{
+  margin-right: -5px;
+  line-height: 14px;
+  vertical-align: top;
+}
+//END sortPropertiesbyAttributes
